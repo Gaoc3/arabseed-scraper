@@ -1,0 +1,2 @@
+[console_scripts]
+arabseed-scraper = arabseed_scraper.cli:run_cli

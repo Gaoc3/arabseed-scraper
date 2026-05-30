@@ -1,0 +1,14 @@
+LICENSE
+README.md
+pyproject.toml
+setup.py
+arabseed_scraper/__init__.py
+arabseed_scraper/cli.py
+arabseed_scraper/scraper.py
+arabseed_scraper.egg-info/PKG-INFO
+arabseed_scraper.egg-info/SOURCES.txt
+arabseed_scraper.egg-info/dependency_links.txt
+arabseed_scraper.egg-info/entry_points.txt
+arabseed_scraper.egg-info/requires.txt
+arabseed_scraper.egg-info/top_level.txt
+tests/test_scraper.py

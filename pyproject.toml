@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "arabseed-scraper"
+version = "1.0.0"
+description = "A professional web scraper and decrypter API & CLI tool for ArabSeed and its mirrors."
+readme = "README.md"
+authors = [
+    { name = "Antigravity Team", email = "antigravity@gemini.ai" }
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries :: Python Modules"
+]
+dependencies = [
+    "requests>=2.25.0",
+    "beautifulsoup4>=4.9.3",
+    "rich>=10.0.0"
+]
+requires-python = ">=3.8"
+
+[project.urls]
+Homepage = "https://github.com/user/arabseed-scraper"
+Bug-Tracker = "https://github.com/user/arabseed-scraper/issues"
+
+[project.scripts]
+arabseed-scraper = "arabseed_scraper.cli:run_cli"

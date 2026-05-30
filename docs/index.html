@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>وثائق عرب سيد المطور | ArabSeed Scraper Documentation</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Outfit:wght@300;400;600;800&family=Cairo:wght@400;600;800&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Cyber Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ==========================================================================
+           1. CSS VARIABLES & THEMES (Cyberpunk Neon & Matrix Green)
+           ========================================================================== */
+        
+        :root {
+            /* Theme 1: Cyberpunk Neon (Default Dark) */
+            --bg-base: #06070d;
+            --bg-panel: rgba(13, 16, 29, 0.75);
+            --bg-code: #0b0e1a;
+            --border-glow: rgba(255, 0, 127, 0.35);
+            
+            --color-primary: #ff007f;     /* Neon Pink */
+            --color-secondary: #00f0ff;   /* Neon Cyan */
+            --color-accent: #a020f0;      /* Neon Purple */
+            --color-success: #39ff14;     /* Neon Green */
+            
+            --text-main: #e2e8f0;
+            --text-muted: #8a99ad;
+            --text-heading: #ffffff;
+            
+            --font-main: 'Outfit', 'Cairo', sans-serif;
+            --font-mono: 'Fira Code', 'Share Tech Mono', monospace;
+            --cyber-glow: 0 0 15px var(--color-primary), 0 0 5px rgba(255, 0, 127, 0.2);
+            --cyber-glow-cyan: 0 0 15px var(--color-secondary), 0 0 5px rgba(0, 240, 255, 0.2);
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="matrix"] {
+            /* Theme 2: Matrix Grid (Green Tech) */
+            --bg-base: #020503;
+            --bg-panel: rgba(4, 18, 9, 0.75);
+            --bg-code: #030a05;
+            --border-glow: rgba(0, 255, 102, 0.35);
+            
+            --color-primary: #00ff66;     /* Matrix Green */
+            --color-secondary: #00ccff;   /* Tech Blue */
+            --color-accent: #33ff33;      /* Light Green */
+            --color-success: #00ff66;
+            
+            --text-main: #a3e635;
+            --text-muted: #4d7c0f;
+            --text-heading: #ffffff;
+            
+            --cyber-glow: 0 0 15px var(--color-primary), 0 0 5px rgba(0, 255, 102, 0.2);
+            --cyber-glow-cyan: 0 0 15px var(--color-secondary), 0 0 5px rgba(0, 204, 255, 0.2);
+        }
+
+        /* ==========================================================================
+           2. RESET & BASE STYLES
+           ========================================================================== */
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            scrollbar-width: thin;
+            scrollbar-color: var(--color-primary) var(--bg-base);
+        }
+
+        /* Cyber Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-base);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--color-primary);
+            border-radius: 4px;
+            box-shadow: 0 0 8px var(--color-primary);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--color-secondary);
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            line-height: 1.7;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255, 0, 127, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(0, 240, 255, 0.05) 0%, transparent 40%),
+                linear-gradient(rgba(255, 255, 255, 0.003) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.003) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 30px 30px, 30px 30px;
+            transition: var(--transition);
+        }
+
+        a {
+            color: var(--color-secondary);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        a:hover {
+            color: var(--color-primary);
+            text-shadow: 0 0 8px var(--color-primary);
+        }
+
+        h1, h2, h3, h4 {
+            font-weight: 800;
+            color: var(--text-heading);
+            margin-bottom: 1rem;
+            letter-spacing: -0.5px;
+        }
+
+        /* ==========================================================================
+           3. FUTURISTIC BACKGROUND GRID & LIGHTS
+           ========================================================================== */
+        
+        .cyber-grid {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background: linear-gradient(rgba(18, 18, 18, 0) 95%, var(--border-glow) 95%),
+                        linear-gradient(90deg, rgba(18, 18, 18, 0) 95%, var(--border-glow) 95%);
+            background-size: 40px 40px;
+            opacity: 0.12;
+            z-index: 0;
+        }
+
+        .cyber-scanline {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0, 0, 0, 0.12) 50%,
+                rgba(0, 0, 0, 0.12)
+            );
+            background-size: 100% 4px;
+            z-index: 99999;
+            opacity: 0.4;
+        }
+
+        /* ==========================================================================
+           4. LAYOUT: APP CONTAINER, HEADER, SIDEBAR, MAIN CONTENT
+           ========================================================================== */
+        
+        .app-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Header (Cyber Navbar) */
+        .cyber-header {
+            grid-column: span 2;
+            height: 70px;
+            background: rgba(6, 7, 13, 0.9);
+            border-bottom: 1px solid var(--border-glow);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-logo i {
+            font-size: 28px;
+            color: var(--color-primary);
+            text-shadow: var(--cyber-glow);
+            animation: pulse 2s infinite;
+        }
+
+        .header-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-heading);
+            font-family: 'Share Tech Mono', sans-serif;
+        }
+
+        .header-title span {
+            color: var(--color-primary);
+            text-shadow: var(--cyber-glow);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Theme Switcher Button */
+        .theme-toggle-btn {
+            background: var(--bg-panel);
+            border: 1px solid var(--color-primary);
+            border-radius: 999px;
+            padding: 8px 16px;
+            color: var(--color-primary);
+            font-family: var(--font-mono);
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+            box-shadow: 0 0 10px rgba(255,0,127,0.1);
+        }
+
+        .theme-toggle-btn:hover {
+            background: var(--color-primary);
+            color: var(--bg-base);
+            box-shadow: var(--cyber-glow);
+        }
+
+        .github-link {
+            font-size: 24px;
+            color: var(--text-main);
+            transition: var(--transition);
+        }
+        .github-link:hover {
+            color: var(--color-secondary);
+            text-shadow: var(--cyber-glow-cyan);
+        }
+
+        /* Sidebar Navigation */
+        .cyber-sidebar {
+            background: rgba(6, 7, 13, 0.95);
+            border-left: 1px solid var(--border-glow);
+            padding: 2rem 1.5rem;
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+            z-index: 10;
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .search-box input {
+            width: 100%;
+            background: var(--bg-code);
+            border: 1px solid var(--border-glow);
+            border-radius: var(--border-radius);
+            padding: 10px 35px 10px 15px;
+            color: var(--text-main);
+            font-family: var(--font-main);
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .search-box input:focus {
+            border-color: var(--color-primary);
+            box-shadow: 0 0 10px rgba(255, 0, 127, 0.2);
+        }
+
+        .search-box i {
+            position: absolute;
+            top: 50%;
+            left: 15px;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .sidebar-menu-title {
+            font-family: 'Share Tech Mono', sans-serif;
+            font-size: 13px;
+            color: var(--color-secondary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+            padding-right: 5px;
+        }
+
+        .sidebar-nav-list {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-nav-item {
+            margin-bottom: 6px;
+        }
+
+        .sidebar-nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            border-radius: var(--border-radius);
+            color: var(--text-main);
+            font-size: 15px;
+            font-weight: 600;
+            transition: var(--transition);
+            border: 1px solid transparent;
+        }
+
+        .sidebar-nav-link i {
+            width: 20px;
+            font-size: 16px;
+            color: var(--color-secondary);
+            transition: var(--transition);
+        }
+
+        .sidebar-nav-link:hover, 
+        .sidebar-nav-link.active {
+            background: var(--bg-panel);
+            color: var(--color-primary);
+            border-color: var(--border-glow);
+            padding-right: 20px;
+        }
+
+        .sidebar-nav-link:hover i, 
+        .sidebar-nav-link.active i {
+            color: var(--color-primary);
+            text-shadow: var(--cyber-glow);
+        }
+
+        /* Main Content Panel */
+        .cyber-content {
+            padding: 3rem 4rem;
+            overflow-y: auto;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* ==========================================================================
+           5. INTERACTIVE DOCS COMPONENTS: CARDS, PANELS, TERMINALS
+           ========================================================================== */
+        
+        .doc-section {
+            margin-bottom: 4.5rem;
+            scroll-margin-top: 100px;
+        }
+
+        .doc-section h1 {
+            font-size: 38px;
+            border-bottom: 2px solid var(--border-glow);
+            padding-bottom: 10px;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-shadow: var(--cyber-glow);
+        }
+
+        .doc-section h1 i {
+            color: var(--color-primary);
+        }
+
+        .doc-section h2 {
+            font-size: 24px;
+            margin-top: 2rem;
+            color: var(--color-secondary);
+        }
+
+        .doc-paragraph {
+            font-size: 16px;
+            color: var(--text-main);
+            margin-bottom: 1.5rem;
+            text-align: justify;
+        }
+
+        /* Cyberpunk Alert Boxes */
+        .cyber-alert {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-glow);
+            border-right: 5px solid var(--color-primary);
+            border-radius: var(--border-radius);
+            padding: 1.2rem 1.8rem;
+            margin: 2rem 0;
+            display: flex;
+            gap: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            animation: borderPulse 4s infinite;
+        }
+
+        .cyber-alert-info {
+            border-right-color: var(--color-secondary);
+        }
+
+        .cyber-alert-info i {
+            color: var(--color-secondary);
+            text-shadow: var(--cyber-glow-cyan);
+        }
+
+        .cyber-alert i {
+            font-size: 22px;
+            color: var(--color-primary);
+            text-shadow: var(--cyber-glow);
+            margin-top: 3px;
+        }
+
+        .cyber-alert-title {
+            font-weight: 800;
+            font-size: 16px;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+
+        .cyber-alert-desc {
+            font-size: 14px;
+            color: var(--text-main);
+        }
+
+        /* High Tech Code Boxes */
+        .code-container {
+            background: var(--bg-code);
+            border: 1px solid var(--border-glow);
+            border-radius: var(--border-radius);
+            margin: 2rem 0;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+        }
+
+        .code-header {
+            background: rgba(6, 7, 13, 0.9);
+            border-bottom: 1px solid var(--border-glow);
+            padding: 10px 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-language {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--color-secondary);
+            text-shadow: var(--cyber-glow-cyan);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .copy-btn {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-glow);
+            color: var(--text-main);
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: var(--transition);
+        }
+
+        .copy-btn:hover {
+            color: var(--color-primary);
+            border-color: var(--color-primary);
+            box-shadow: var(--cyber-glow);
+        }
+
+        .code-container pre {
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin: 0;
+        }
+
+        .code-container code {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            color: #39ff14; /* Matrix neon green as default code color */
+            direction: ltr;
+            text-align: left;
+            display: block;
+            white-space: pre;
+        }
+
+        /* Futuristic Specs / Properties Table */
+        .specs-table-container {
+            width: 100%;
+            overflow-x: auto;
+            border: 1px solid var(--border-glow);
+            border-radius: var(--border-radius);
+            margin: 2rem 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .specs-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: right;
+            font-size: 15px;
+        }
+
+        .specs-table th {
+            background: var(--bg-code);
+            color: var(--color-secondary);
+            font-weight: 800;
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border-glow);
+        }
+
+        .specs-table td {
+            padding: 14px 18px;
+            border-bottom: 1px solid rgba(255, 0, 127, 0.1);
+            background: rgba(13, 16, 29, 0.2);
+        }
+
+        .specs-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .specs-table tr:hover td {
+            background: rgba(255, 0, 127, 0.05);
+        }
+
+        .badge-type {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            background: rgba(0, 240, 255, 0.15);
+            color: var(--color-secondary);
+            padding: 3px 8px;
+            border-radius: 4px;
+            border: 1px solid var(--color-secondary);
+        }
+
+        /* Interactive API Endpoint Badge */
+        .endpoint-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg-code);
+            border: 1px solid var(--border-glow);
+            border-radius: var(--border-radius);
+            padding: 8px 15px;
+            margin: 1rem 0;
+            font-family: var(--font-mono);
+        }
+
+        .method-get {
+            background: var(--color-secondary);
+            color: var(--bg-base);
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        /* ==========================================================================
+           6. RESPONSIVE DESIGN & MEDIA QUERIES
+           ========================================================================== */
+        
+        @media (max-width: 1024px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+            .cyber-header {
+                grid-column: span 1;
+            }
+            .cyber-sidebar {
+                display: none; /* Can add slideout menu drawer later */
+            }
+            .cyber-content {
+                padding: 2rem;
+            }
+        }
+
+        /* ==========================================================================
+           7. ANIMATIONS
+           ========================================================================== */
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes borderPulse {
+            0%, 100% {
+                border-color: rgba(255, 0, 127, 0.35);
+            }
+            50% {
+                border-color: rgba(0, 240, 255, 0.65);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Futuristic background layers -->
+    <div class="cyber-grid"></div>
+    <div class="cyber-scanline"></div>
+
+    <div class="app-container">
+        
+        <!-- Cyber Header (Navbar) -->
+        <header class="cyber-header">
+            <div class="header-logo">
+                <i class="fa-solid fa-radiation"></i>
+                <div class="header-title">عرب سيد <span>ArabSeed API</span></div>
+            </div>
+            
+            <div class="header-actions">
+                <!-- Theme Switcher Button -->
+                <button class="theme-toggle-btn" id="themeBtn" onclick="toggleTheme()">
+                    <i class="fa-solid fa-mask"></i> 
+                    <span>ثيم: Cyber Neon</span>
+                </button>
+                
+                <a href="https://github.com/user/arabseed-scraper" target="_blank" class="github-link" title="شاهد المشروع على GitHub">
+                    <i class="fa-brands fa-github"></i>
+                </a>
+            </div>
+        </header>
+
+        <!-- Sidebar Navigation -->
+        <aside class="cyber-sidebar">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="docsSearch" placeholder="ابحث في الوثائق..." onkeyup="filterDocs()">
+            </div>
+            
+            <div class="sidebar-menu-title">الدليل الأساسي</div>
+            <ul class="sidebar-nav-list">
+                <li class="sidebar-nav-item">
+                    <a href="#intro" class="sidebar-nav-link active" onclick="setActiveLink(this)">
+                        <i class="fa-solid fa-terminal"></i> المقدمة والتعريف
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="#quickstart" class="sidebar-nav-link" onclick="setActiveLink(this)">
+                        <i class="fa-solid fa-bolt"></i> البدء السريع
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="#cli" class="sidebar-nav-link" onclick="setActiveLink(this)">
+                        <i class="fa-solid fa-gamepad"></i> واجهة الطرفية CLI
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-menu-title">الواجهة البرمجية API</div>
+            <ul class="sidebar-nav-list">
+                <li class="sidebar-nav-item">
+                    <a href="#api-init" class="sidebar-nav-link" onclick="setActiveLink(this)">
+                        <i class="fa-solid fa-gears"></i> التهيئة والتدوير
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="#api-search" class="sidebar-nav-link" onclick="setActiveLink(this)">
+                        <i class="fa-solid fa-magnifying-glass"></i> البحث الذكي
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="#api-details" class="sidebar-nav-link" onclick="setActiveLink(this)">
+                        <i class="fa-solid fa-circle-info"></i> جلب التفاصيل والحلقات
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="#api-links" class="sidebar-nav-link" onclick="setActiveLink(this)">
+                        <i class="fa-solid fa-unlock-keyhole"></i> روابط البث والتحميل
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-menu-title">الرفع والنشر</div>
+            <ul class="sidebar-nav-list">
+                <li class="sidebar-nav-item">
+                    <a href="#pypi-deploy" class="sidebar-nav-link" onclick="setActiveLink(this)">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> النشر على PyPI
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="#ghpages-deploy" class="sidebar-nav-link" onclick="setActiveLink(this)">
+                        <i class="fa-solid fa-globe"></i> استضافة GitHub Pages
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="cyber-content">
+            
+            <!-- SECTION 1: Introduction -->
+            <section id="intro" class="doc-section">
+                <h1><i class="fa-solid fa-terminal"></i> المقدمة والتعريف</h1>
+                <p class="doc-paragraph">
+                    مكتبة <strong>arabseed-scraper</strong> هي مكتبة بايثون احترافية ومفتوحة المصدر مصممة خصيصاً للبحث التفاعلي واستخراج جميع روابط <strong>المشاهدة المباشرة (البث)</strong> وروابط <strong>التحميل المباشر</strong> من موقع عرب سيد ومراياه المختلفة وفك تشفيرها تلقائياً بالكامل.
+                </p>
+                <p class="doc-paragraph">
+                    تتميز الحزمة بنظام مرن ومرن جداً لتوزيع وفك تشفير الروابط التي يعتمدها الموقع لحماية الملفات، إلى جانب دعم تدوير المرايا والتحويل التلقائي للنطاقات الشغالة (Mirror Fallback) لتفادي مشاكل الحجب الإقليمي.
+                </p>
+                
+                <div class="cyber-alert cyber-alert-info">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <div>
+                        <div class="cyber-alert-title">🔓 تقنية فك تشفير الروابط الحصرية</div>
+                        <div class="cyber-alert-desc">
+                            يقوم الموقع بتعمية الروابط عبر تحويلها إلى مسارات Base64 معقدة. تفك هذه المكتبة تشفير هذه الروابط فورياً وتعطيك الروابط المباشرة للسيرفرات الأساسية والبديلة (مثل ArabSeed CDN و Up4ever وغيرها).
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: Quick Start -->
+            <section id="quickstart" class="doc-section">
+                <h1><i class="fa-solid fa-bolt"></i> البدء السريع</h1>
+                <p class="doc-paragraph">
+                    تم رفع المكتبة وتوزيعها رسمياً على منصة حزم بايثون العالمية <strong>PyPI</strong>. يمكنك تثبيتها في ثوانٍ باستخدام مدير الحزم <code>pip</code>.
+                </p>
+                
+                <h2>تثبيت الحزمة</h2>
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-language">terminal</div>
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> نسخ</button>
+                    </div>
+                    <pre><code>pip install arabseed-scraper</code></pre>
+                </div>
+
+                <h2>مثال سريع للاستخدام البرمجي</h2>
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-language">python</div>
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> نسخ</button>
+                    </div>
+                    <pre><code>from arabseed_scraper import ArabSeedAPI
+
+# 1. تهيئة الكلاس
+api = ArabSeedAPI()
+
+# 2. البحث عن عمل
+results = api.search("فيلم الست")
+
+# 3. طباعة السيرفرات والروابط المباشرة المفكوكة التشفير
+if results:
+    url = results[0]['url']
+    download_servers = api.get_download_links(url)
+    for d in download_servers:
+        print(f"السيرفر: {d['server']} -> الرابط المباشر: {d['direct_link']}")</code></pre>
+                </div>
+            </section>
+
+            <!-- SECTION 3: CLI Mode -->
+            <section id="cli" class="doc-section">
+                <h1><i class="fa-solid fa-gamepad"></i> واجهة الطرفية CLI التفاعلية</h1>
+                <p class="doc-paragraph">
+                    تأتي المكتبة مع واجهة تفاعلية ملونة وفائقة الجمال داخل موجه الأوامر (Terminal) مبنية بالكامل باستخدام مكتبة <code>rich</code> الرائعة. تتيح لك الواجهة البحث التفاعلي واختيار الفيلم أو الحلقة بمرونة كاملة وتوليد جداول منظمة للروابط.
+                </p>
+                
+                <h2>تشغيل الواجهة التفاعلية</h2>
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-language">terminal</div>
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> نسخ</button>
+                    </div>
+                    <pre><code>arabseed-scraper</code></pre>
+                </div>
+
+                <div class="cyber-alert">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <div>
+                        <div class="cyber-alert-title">🎨 تلميح التصميم الملون</div>
+                        <div class="cyber-alert-desc">
+                            في حال كانت بيئة التشغيل لديك تدعم الألوان الكاملة، ستظهر الأداة بجداول رسومية ملونة وموجهات تفاعلية، وفي البيئات البسيطة ستقوم تلقائياً بالتحويل لواجهة نصية متوافقة وجميلة لضمان عدم توقف البرنامج.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4: API - Initialization -->
+            <section id="api-init" class="doc-section">
+                <h1><i class="fa-solid fa-gears"></i> تهيئة الـ API والتحكم بالمرايا</h1>
+                <p class="doc-paragraph">
+                    يمكنك تهيئة كلاس <code>ArabSeedAPI</code> بمرايا ونطاقات مخصصة للتحكم بالاتصال وإدارته بشكل كامل.
+                </p>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-language">python</div>
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> نسخ</button>
+                    </div>
+                    <pre><code>from arabseed_scraper import ArabSeedAPI
+
+# تهيئة بموقع مخصص وتحديد مهلة اتصال (timeout) بـ 15 ثانية
+api = ArabSeedAPI(base_url="https://m.asd.ink", timeout=15)
+
+# اختبار سرعة استجابة النطاق بالثواني (Latency)
+latency = api.test_connection()
+print(f"سرعة الاستجابة: {latency:.4f} ثانية")
+
+# البحث والتبديل التلقائي إلى أسرع نطاق مرآة شغالة حالياً
+fallback_success = api.auto_fallback_mirror()
+print("تم التبديل لأسرع مرآة بنجاح:", fallback_success)
+print("النطاق النشط الحالي:", api.base_url)</code></pre>
+                </div>
+            </section>
+
+            <!-- SECTION 5: API - Search -->
+            <section id="api-search" class="doc-section">
+                <h1><i class="fa-solid fa-magnifying-glass"></i> البحث الذكي وتصنيف النتائج</h1>
+                <p class="doc-paragraph">
+                    تقوم دالة البحث بالبحث في الموقع الفعلي وتصنيف وتعديل البيانات بشكل منظم لتسهيل فلترتها.
+                </p>
+                
+                <div class="endpoint-badge">
+                    <span class="method-get">METHOD</span>
+                    <span>api.search(query: str) -> List[Dict]</span>
+                </div>
+
+                <h2>مواصفات النتيجة الراجعة</h2>
+                <div class="specs-table-container">
+                    <table class="specs-table">
+                        <thead>
+                            <tr>
+                                <th>اسم الحقل (Key)</th>
+                                <th>النوع (Type)</th>
+                                <th>الوصف (Description)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>title</code></td>
+                                <td><span class="badge-type">str</span></td>
+                                <td>العنوان الكامل للعمل باللغة العربية (مثال: فيلم الست 2025).</td>
+                            </tr>
+                            <tr>
+                                <td><code>url</code></td>
+                                <td><span class="badge-type">str</span></td>
+                                <td>رابط الصفحة الخاصة بالعمل على عرب سيد.</td>
+                            </tr>
+                            <tr>
+                                <td><code>poster</code></td>
+                                <td><span class="badge-type">str</span></td>
+                                <td>رابط صورة البوستر الرسمية للعمل بدقة كاملة.</td>
+                            </tr>
+                            <tr>
+                                <td><code>rating</code></td>
+                                <td><span class="badge-type">str</span></td>
+                                <td>التقييم الفعلي للعمل (مثال: 7.8).</td>
+                            </tr>
+                            <tr>
+                                <td><code>quality</code></td>
+                                <td><span class="badge-type">str</span></td>
+                                <td>شارة الجودة المتاحة (HDCAM، WEB-DL، BluRay).</td>
+                            </tr>
+                            <tr>
+                                <td><code>type</code></td>
+                                <td><span class="badge-type">str</span></td>
+                                <td>النوع المصنف آلياً (فيلم، مسلسل / حلقة، موسيقى / أغنية، برنامج).</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- SECTION 6: API - Details & Episodes -->
+            <section id="api-details" class="doc-section">
+                <h1><i class="fa-solid fa-circle-info"></i> جلب التفاصيل واستخراج حلقات المواسم</h1>
+                <p class="doc-paragraph">
+                    تستعلم هذه الدالة عن صفحة العمل للحصول على القصة وتفاصيل المسلسل والمواسم والحلقات كاملة.
+                </p>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-language">python</div>
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> نسخ</button>
+                    </div>
+                    <pre><code># جلب تفاصيل العمل
+details = api.get_details("https://m.asd.ink/مسلسل-ليل-الحلقة-69/")
+
+print("اسم العمل الفعلي:", details["title"])
+print("القصة:", details["description"])
+print("هل العمل مسلسل؟:", details["is_series"])
+
+# في حال كان مسلسلاً، اطبع حلقات الموسم بالكامل وروابطها
+if details["is_series"]:
+    for ep in details["episodes"]:
+        active_status = "⭐ حلقة حالية" if ep["active"] else ""
+        print(f"- {ep['title']} -> {ep['url']} {active_status}")</code></pre>
+                </div>
+            </section>
+
+            <!-- SECTION 7: API - Links Extraction -->
+            <section id="api-links" class="doc-section">
+                <h1><i class="fa-solid fa-unlock-keyhole"></i> جلب وفك تشفير روابط البث والتحميل</h1>
+                <p class="doc-paragraph">
+                    هذا هو قلب المكتبة؛ حيث يقوم بالتصفح الصامت لصفحات البث والتحميل الفرعية، وفك التشفير بالكامل ليعطيك سيرفرات جاهزة للتشغيل والتحميل الفوري.
+                </p>
+                
+                <h2>1. روابط البث المباشر (Streaming Links)</h2>
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-language">python</div>
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> نسخ</button>
+                    </div>
+                    <pre><code># جلب فك تشفير سيرفرات المشاهدة الفورية
+watch_links = api.get_watch_links(url)
+
+for stream in watch_links:
+    print(f"سيرفر البث: {stream['server']}")
+    print(f"رابط المشاهدة المباشر: {stream['direct_link']}")</code></pre>
+                </div>
+
+                <h2>2. روابط التحميل المباشرة والبديلة (Download Links)</h2>
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-language">python</div>
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> نسخ</button>
+                    </div>
+                    <pre><code># جلب فك تشفير جميع روابط التحميل
+download_links = api.get_download_links(url)
+
+for dl in download_links:
+    print(f"سيرفر التحميل: {dl['server']}")
+    print(f"الجودة: {dl['quality']} | الحجم: {dl['size']}")
+    print(f"رابط التحميل الفوري: {dl['direct_link']}")</code></pre>
+                </div>
+            </section>
+
+            <!-- SECTION 8: PyPI Publishing -->
+            <section id="pypi-deploy" class="doc-section">
+                <h1><i class="fa-solid fa-cloud-arrow-up"></i> تحديث الحزمة والرفع على PyPI</h1>
+                <p class="doc-paragraph">
+                    تم تكوين حزمة <code>arabseed-scraper</code> بمعايير البناء الحديثة باستخدام <code>pyproject.toml</code> و <code>setup.py</code>. لتحديث الحزمة أو رفعها، اتبع هذه الأوامر البسيطة:
+                </p>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-language">bash</div>
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> نسخ</button>
+                    </div>
+                    <pre><code># 1. تثبيت أدوات البناء الرسمية
+pip install --upgrade build twine
+
+# 2. بناء ملفات التوزيع المضغوطة
+python -m build
+
+# 3. التحقق من سلامة البيانات
+python -m twine check dist/*
+
+# 4. الرفع الفوري للمستودع
+python -m twine upload dist/*</code></pre>
+                </div>
+            </section>
+
+            <!-- SECTION 9: GitHub Pages Deployment -->
+            <section id="ghpages-deploy" class="doc-section">
+                <h1><i class="fa-solid fa-globe"></i> استضافة هذه الوثائق على GitHub Pages</h1>
+                <p class="doc-paragraph">
+                    يمكنك استضافة موقع الوثائق الرائع هذا مجاناً على **GitHub Pages** بكل بساطة بمجرد رفع المجلد إلى مستودعك الخاص. اتبع الخطوات التالية:
+                </p>
+                
+                <ol style="margin-right: 20px; margin-bottom: 20px;">
+                    <li>أنشئ مستودعاً (Repository) على حسابك في GitHub وسمه <code>arabseed-scraper</code>.</li>
+                    <li>قم برفع هذا الملف (<code>index.html</code>) داخل مجلد يسمى <code>docs/</code> في مستودعك.</li>
+                    <li>اذهب إلى إعدادات المستودع (Settings) ثم إلى تبويب **Pages**.</li>
+                    <li>من خيار **Build and deployment**، حدد المصدر ليكون **Deploy from a branch**.</li>
+                    <li>حدد الفرع (Branch) ليكون <code>main</code> والمجلد ليكون <code>/docs</code> ثم اضغط **Save**.</li>
+                    <li>خلال دقيقة واحدة، سيكون موقع التوثيق الملون والسايبر التفاعلي الخاص بك متاحاً للعالم بأكمله تحت نطاق <code>github.io</code>!</li>
+                </ol>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- JavaScript for Dynamic Theme Toggle & Copy Features -->
+    <script>
+        // Set dynamic active state on sidebar during scrolling
+        window.addEventListener('DOMContentLoaded', () => {
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    const id = entry.target.getAttribute('id');
+                    if (entry.intersectionRatio > 0.3) {
+                        document.querySelectorAll('.sidebar-nav-link').forEach(link => {
+                            link.classList.remove('active');
+                        });
+                        const activeLink = document.querySelector(`.sidebar-nav-link[href="#${id}"]`);
+                        if (activeLink) activeLink.classList.add('active');
+                    }
+                });
+            }, { threshold: [0.1, 0.3, 0.5, 0.8] });
+
+            document.querySelectorAll('.doc-section').forEach(section => {
+                observer.observe(section);
+            });
+        });
+
+        // Theme Toggle Feature
+        let currentTheme = "neon"; // Default
+        
+        function toggleTheme() {
+            const body = document.body;
+            const btn = document.getElementById("themeBtn");
+            
+            if (currentTheme === "neon") {
+                body.setAttribute("data-theme", "matrix");
+                btn.innerHTML = `<i class="fa-solid fa-terminal"></i> <span>ثيم: Matrix Green</span>`;
+                btn.style.borderColor = "#00ff66";
+                btn.style.color = "#00ff66";
+                currentTheme = "matrix";
+            } else {
+                body.removeAttribute("data-theme");
+                btn.innerHTML = `<i class="fa-solid fa-mask"></i> <span>ثيم: Cyber Neon</span>`;
+                btn.style.borderColor = "#ff007f";
+                btn.style.color = "#ff007f";
+                currentTheme = "neon";
+            }
+        }
+
+        // Copy Code to Clipboard
+        function copyCode(button) {
+            const container = button.closest('.code-container');
+            const code = container.querySelector('code').innerText;
+            
+            navigator.clipboard.writeText(code).then(() => {
+                const originalText = button.innerHTML;
+                button.innerHTML = `<i class="fa-solid fa-check"></i> تم النسخ!`;
+                button.style.borderColor = "var(--color-success)";
+                button.style.color = "var(--color-success)";
+                
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.style.borderColor = "";
+                    button.style.color = "";
+                }, 2000);
+            });
+        }
+
+        // Sidebar Navigation click handling
+        function setActiveLink(link) {
+            document.querySelectorAll('.sidebar-nav-link').forEach(el => {
+                el.classList.remove('active');
+            });
+            link.classList.add('active');
+        }
+
+        // Live Documentation Search / Filter
+        function filterDocs() {
+            const query = document.getElementById("docsSearch").value.toLowerCase();
+            const sections = document.querySelectorAll(".doc-section");
+            
+            sections.forEach(sec => {
+                const text = sec.innerText.toLowerCase();
+                if (text.includes(query)) {
+                    sec.style.display = "block";
+                } else {
+                    sec.style.display = "none";
+                }
+            });
+        }
+    </script>
+</body>
+</html>
