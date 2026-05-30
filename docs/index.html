@@ -1123,6 +1123,50 @@ for dl in download_links:
         let activeMatchIndex = -1;
         let highlightedElements = [];
 
+        // DOM-based text node crawler to highlight keywords without breaking HTML tags or matching in comments/attributes
+        function highlightSection(element, query) {
+            const escapedQuery = query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+            const regex = new RegExp(escapedQuery, 'gi');
+            
+            function traverse(node) {
+                if (node.nodeType === 3) { // Text Node
+                    const matches = node.nodeValue.match(regex);
+                    if (matches) {
+                        const parent = node.parentNode;
+                        if (parent.tagName === 'MARK' || parent.tagName === 'SCRIPT' || parent.tagName === 'STYLE') {
+                            return;
+                        }
+                        
+                        const fragment = document.createDocumentFragment();
+                        let lastIndex = 0;
+                        
+                        node.nodeValue.replace(regex, (match, index) => {
+                            if (index > lastIndex) {
+                                fragment.appendChild(document.createTextNode(node.nodeValue.substring(lastIndex, index)));
+                            }
+                            
+                            const mark = document.createElement('mark');
+                            mark.className = 'cyber-highlight';
+                            mark.textContent = match;
+                            fragment.appendChild(mark);
+                            
+                            lastIndex = index + match.length;
+                        });
+                        
+                        if (lastIndex < node.nodeValue.length) {
+                            fragment.appendChild(document.createTextNode(node.nodeValue.substring(lastIndex)));
+                        }
+                        
+                        parent.replaceChild(fragment, node);
+                    }
+                } else if (node.nodeType === 1 && node.childNodes) { // Element Node
+                    Array.from(node.childNodes).forEach(traverse);
+                }
+            }
+            
+            traverse(element);
+        }
+
         // Smart Live Documentation Search / Filter & Highlighting
         function filterDocs() {
             const queryInput = document.getElementById("docsSearch");
@@ -1148,10 +1192,7 @@ for dl in download_links:
             }
             
             let totalMatches = 0;
-            // Escape special regex characters
             const escapedQuery = query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-            // Regex to match query outside HTML tags to prevent tag breaking
-            const regex = new RegExp('(?![^<]*>)' + escapedQuery, 'gi');
             
             sections.forEach(sec => {
                 const id = sec.getAttribute('id');
@@ -1159,30 +1200,28 @@ for dl in download_links:
                 
                 if (!originalHTML) return;
                 
-                // Temporary div to get clean text for search counting
-                const tempDiv = document.createElement("div");
-                tempDiv.innerHTML = originalHTML;
-                const textContent = tempDiv.innerText.toLowerCase();
+                // Restore original HTML first to remove previous marks
+                sec.innerHTML = originalHTML;
                 
-                // Count occurrences in clean text
+                // Get clean text for search counting
+                const textContent = sec.innerText.toLowerCase();
+                
+                // Count occurrences in clean text only (prevents comments/attributes matching)
                 const occurrences = (textContent.match(new RegExp(escapedQuery, 'g')) || []).length;
                 
                 if (occurrences > 0) {
                     totalMatches += occurrences;
                     
-                    // Apply highlighting to matching text in HTML structure
-                    const highlightedHTML = originalHTML.replace(regex, match => {
-                        return `<mark class="cyber-highlight">${match}</mark>`;
-                    });
+                    // Highlight using DOM text node traversal (safe, comment/attribute proof!)
+                    highlightSection(sec, query);
                     
-                    sec.innerHTML = highlightedHTML;
                     sec.style.display = "block";
                 } else {
                     sec.style.display = "none";
                 }
             });
             
-            // Gather all newly generated highlighted elements
+            // Gather all newly generated highlighted elements (only visible text marks exist!)
             highlightedElements = Array.from(document.querySelectorAll("mark.cyber-highlight"));
             
             if (highlightedElements.length > 0) {
