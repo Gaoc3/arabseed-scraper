@@ -292,7 +292,7 @@
             background: var(--bg-search-input);
             border: 1px solid var(--border-glow);
             border-radius: var(--border-radius);
-            padding: 10px 20px 10px 90px;
+            padding: 10px 40px 10px 130px;
             color: var(--text-main);
             font-family: var(--font-main);
             outline: none;
@@ -307,10 +307,52 @@
         .search-box i {
             position: absolute;
             top: 50%;
-            left: 15px;
+            right: 15px;
             transform: translateY(-50%);
             color: var(--text-muted);
             z-index: 5;
+            pointer-events: none;
+        }
+
+        .search-controls {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: none;
+            align-items: center;
+            gap: 6px;
+            z-index: 10;
+        }
+
+        .search-nav-btn {
+            background: transparent;
+            border: 1px solid var(--border-glow);
+            border-radius: 4px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .search-nav-btn:hover {
+            color: var(--color-primary);
+            border-color: var(--color-primary);
+            box-shadow: 0 0 8px rgba(var(--color-primary-rgb), 0.5);
+        }
+
+        .search-counter {
+            font-size: 11px;
+            font-weight: bold;
+            font-family: var(--font-mono);
+            color: var(--color-primary);
+            text-shadow: var(--cyber-glow);
+            margin-right: 4px;
+            white-space: nowrap;
         }
 
         /* Smart Cyber Highlight */
@@ -318,11 +360,21 @@
             background-color: var(--color-primary);
             color: var(--bg-base) !important;
             text-shadow: none;
-            box-shadow: 0 0 10px rgba(var(--color-primary-rgb), 0.8);
+            box-shadow: 0 0 10px rgba(var(--color-primary-rgb), 0.5);
             padding: 2px 4px;
             border-radius: 4px;
             font-weight: 700;
             transition: var(--transition);
+        }
+
+        /* Active highlight currently focused by arrows */
+        mark.cyber-highlight.cyber-highlight-active {
+            background-color: var(--color-accent) !important;
+            color: #ffffff !important;
+            box-shadow: 0 0 18px var(--color-accent);
+            outline: 2px solid var(--color-accent);
+            transform: scale(1.05);
+            display: inline-block;
         }
 
         .sidebar-menu-title {
@@ -677,6 +729,11 @@
             <div class="search-box">
                 <i class="fa-solid fa-magnifying-glass"></i>
                 <input type="text" id="docsSearch" placeholder="ابحث في الوثائق..." onkeyup="filterDocs()">
+                <div class="search-controls" id="searchControls">
+                    <button class="search-nav-btn" onclick="prevMatch()" title="المطابقة السابقة"><i class="fa-solid fa-chevron-up"></i></button>
+                    <button class="search-nav-btn" onclick="nextMatch()" title="المطابقة التالية"><i class="fa-solid fa-chevron-down"></i></button>
+                    <span class="search-counter" id="searchCounter"></span>
+                </div>
             </div>
             
             <div class="sidebar-menu-title">الدليل الأساسي</div>
@@ -1063,29 +1120,17 @@ for dl in download_links:
             link.classList.add('active');
         }
 
+        // Global variables for search result navigation
+        let activeMatchIndex = -1;
+        let highlightedElements = [];
+
         // Smart Live Documentation Search / Filter & Highlighting
         function filterDocs() {
             const queryInput = document.getElementById("docsSearch");
             const query = queryInput.value.trim().toLowerCase();
             const sections = document.querySelectorAll(".doc-section");
-            
-            // Remove or create match counter element
-            let counterEl = document.getElementById("searchCounter");
-            if (!counterEl) {
-                counterEl = document.createElement("span");
-                counterEl.id = "searchCounter";
-                counterEl.style.position = "absolute";
-                counterEl.style.left = "45px";
-                counterEl.style.top = "50%";
-                counterEl.style.transform = "translateY(-50%)";
-                counterEl.style.fontSize = "11px";
-                counterEl.style.fontWeight = "bold";
-                counterEl.style.fontFamily = "var(--font-mono)";
-                counterEl.style.color = "var(--color-primary)";
-                counterEl.style.textShadow = "var(--cyber-glow)";
-                counterEl.style.zIndex = "5";
-                queryInput.parentNode.appendChild(counterEl);
-            }
+            const controlsEl = document.getElementById("searchControls");
+            const counterEl = document.getElementById("searchCounter");
             
             if (!query) {
                 // Restore all original HTML and show all sections
@@ -1096,7 +1141,10 @@ for dl in download_links:
                     }
                     sec.style.display = "block";
                 });
-                counterEl.innerText = "";
+                activeMatchIndex = -1;
+                highlightedElements = [];
+                if (controlsEl) controlsEl.style.display = "none";
+                if (counterEl) counterEl.innerText = "";
                 return;
             }
             
@@ -1135,12 +1183,78 @@ for dl in download_links:
                 }
             });
             
-            if (totalMatches > 0) {
-                counterEl.innerText = `${totalMatches} مطابقات`;
-                counterEl.style.color = "var(--color-primary)";
+            // Gather all newly generated highlighted elements
+            highlightedElements = Array.from(document.querySelectorAll("mark.cyber-highlight"));
+            
+            if (highlightedElements.length > 0) {
+                activeMatchIndex = 0;
+                highlightedElements[activeMatchIndex].classList.add("cyber-highlight-active");
+                if (controlsEl) controlsEl.style.display = "flex";
+                if (counterEl) counterEl.innerText = `1 من ${highlightedElements.length}`;
+                
+                // Smooth scroll to the first active match
+                scrollToActiveMatch();
             } else {
-                counterEl.innerText = `لا توجد نتائج`;
-                counterEl.style.color = "var(--color-accent)";
+                activeMatchIndex = -1;
+                highlightedElements = [];
+                if (controlsEl) {
+                    controlsEl.style.display = "flex";
+                    if (counterEl) counterEl.innerText = "لا توجد نتائج";
+                }
+            }
+        }
+
+        // Search Nav: Next Match
+        function nextMatch() {
+            if (highlightedElements.length === 0) return;
+            
+            // Remove active style from current focused highlight
+            highlightedElements[activeMatchIndex].classList.remove("cyber-highlight-active");
+            
+            // Increment index with wrap around
+            activeMatchIndex = (activeMatchIndex + 1) % highlightedElements.length;
+            
+            // Add active style to newly focused highlight
+            highlightedElements[activeMatchIndex].classList.add("cyber-highlight-active");
+            
+            // Update match counter text
+            const counterEl = document.getElementById("searchCounter");
+            if (counterEl) {
+                counterEl.innerText = `${activeMatchIndex + 1} من ${highlightedElements.length}`;
+            }
+            
+            // Smoothly scroll and center viewport on match
+            scrollToActiveMatch();
+        }
+
+        // Search Nav: Previous Match
+        function prevMatch() {
+            if (highlightedElements.length === 0) return;
+            
+            // Remove active style from current focused highlight
+            highlightedElements[activeMatchIndex].classList.remove("cyber-highlight-active");
+            
+            // Decrement index with wrap around
+            activeMatchIndex = (activeMatchIndex - 1 + highlightedElements.length) % highlightedElements.length;
+            
+            // Add active style to newly focused highlight
+            highlightedElements[activeMatchIndex].classList.add("cyber-highlight-active");
+            
+            // Update match counter text
+            const counterEl = document.getElementById("searchCounter");
+            if (counterEl) {
+                counterEl.innerText = `${activeMatchIndex + 1} من ${highlightedElements.length}`;
+            }
+            
+            // Smoothly scroll and center viewport on match
+            scrollToActiveMatch();
+        }
+
+        // Smoothly scrolls the window to center the active match inside the viewport
+        function scrollToActiveMatch() {
+            const activeEl = highlightedElements[activeMatchIndex];
+            if (activeEl) {
+                activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         }
     </script>
