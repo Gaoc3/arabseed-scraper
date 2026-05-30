@@ -67,8 +67,3 @@ if results:
 ```
 
 ---
-
-## 👨‍💻 معلومات النقل والمسارات
-* **المسار الحالي للمشروع المكتمل**: `C:\Users\secon\Documents\ArabSeedScraper\`
-* **الملف الرئيسي**: `arabseed_scraper.py`
-* **ملف المتطلبات**: `requirements.txt`

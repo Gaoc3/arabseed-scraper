@@ -21,7 +21,7 @@
 
 افتح سطر الأوامر (Terminal / CMD) في مجلد المشروع:
 ```bash
-cd "C:\Users\secon\Documents\ArabSeedScraper"
+cd "."
 ```
 
 ### الخطوة 1: تثبيت أدوات البناء والرفع الرسمية

@@ -49,7 +49,7 @@ class ArabSeedAPI:
 
     def test_connection(self, url: Optional[str] = None) -> Union[bool, float]:
         """
-        Tests if a mirror is responsive and returns its latency in seconds.
+        Tests if a mirror is responsive and returns its latency in userds.
         If connection fails, returns False.
         """
         target = url.rstrip('/') if url else self.base_url
