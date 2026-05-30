@@ -433,7 +433,6 @@
         /* Main Content Panel */
         .cyber-content {
             padding: 3rem 4rem;
-            overflow-y: auto;
             max-width: 1000px;
             margin: 0 auto;
         }
@@ -1253,9 +1252,26 @@ for dl in download_links:
         // Smoothly scrolls the window to center the active match inside the viewport
         function scrollToActiveMatch() {
             const activeEl = highlightedElements[activeMatchIndex];
-            if (activeEl) {
-                activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
+            if (!activeEl) return;
+            
+            // 1. Primary scroll using native scrollIntoView to center
+            activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // 2. Secondary fallback scroll: calculate viewport coordinates after a tiny delay 
+            // to override sticky header occlusion (70px header) or browser scroll locks
+            setTimeout(() => {
+                const rect = activeEl.getBoundingClientRect();
+                const stickyHeaderHeight = 85; // 70px header height + 15px safe margin
+                
+                // If the element ended up covered by the sticky header or is too close to top
+                if (rect.top < stickyHeaderHeight) {
+                    const scrollTarget = window.scrollY + rect.top - stickyHeaderHeight - 40;
+                    window.scrollTo({
+                        top: scrollTarget,
+                        behavior: 'smooth'
+                    });
+                }
+            }, 80);
         }
     </script>
 </body>
