@@ -292,7 +292,7 @@
             background: var(--bg-search-input);
             border: 1px solid var(--border-glow);
             border-radius: var(--border-radius);
-            padding: 10px 35px 10px 15px;
+            padding: 10px 20px 10px 90px;
             color: var(--text-main);
             font-family: var(--font-main);
             outline: none;
@@ -310,6 +310,19 @@
             left: 15px;
             transform: translateY(-50%);
             color: var(--text-muted);
+            z-index: 5;
+        }
+
+        /* Smart Cyber Highlight */
+        mark.cyber-highlight {
+            background-color: var(--color-primary);
+            color: var(--bg-base) !important;
+            text-shadow: none;
+            box-shadow: 0 0 10px rgba(var(--color-primary-rgb), 0.8);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 700;
+            transition: var(--transition);
         }
 
         .sidebar-menu-title {
@@ -958,8 +971,17 @@ for dl in download_links:
 
     <!-- JavaScript for Dynamic Theme Toggle & Copy Features -->
     <script>
-        // Set dynamic active state on sidebar during scrolling
+        // Store original HTML of sections for highlight resetting
+        const sectionOriginalHTMLs = {};
+
+        // Set dynamic active state on sidebar during scrolling & Backup original HTML
         window.addEventListener('DOMContentLoaded', () => {
+            // Backup the original HTML of each section for highlight resetting
+            document.querySelectorAll('.doc-section').forEach(section => {
+                const id = section.getAttribute('id');
+                sectionOriginalHTMLs[id] = section.innerHTML;
+            });
+
             const observer = new IntersectionObserver(entries => {
                 entries.forEach(entry => {
                     const id = entry.target.getAttribute('id');
@@ -1041,19 +1063,85 @@ for dl in download_links:
             link.classList.add('active');
         }
 
-        // Live Documentation Search / Filter
+        // Smart Live Documentation Search / Filter & Highlighting
         function filterDocs() {
-            const query = document.getElementById("docsSearch").value.toLowerCase();
+            const queryInput = document.getElementById("docsSearch");
+            const query = queryInput.value.trim().toLowerCase();
             const sections = document.querySelectorAll(".doc-section");
             
+            // Remove or create match counter element
+            let counterEl = document.getElementById("searchCounter");
+            if (!counterEl) {
+                counterEl = document.createElement("span");
+                counterEl.id = "searchCounter";
+                counterEl.style.position = "absolute";
+                counterEl.style.left = "45px";
+                counterEl.style.top = "50%";
+                counterEl.style.transform = "translateY(-50%)";
+                counterEl.style.fontSize = "11px";
+                counterEl.style.fontWeight = "bold";
+                counterEl.style.fontFamily = "var(--font-mono)";
+                counterEl.style.color = "var(--color-primary)";
+                counterEl.style.textShadow = "var(--cyber-glow)";
+                counterEl.style.zIndex = "5";
+                queryInput.parentNode.appendChild(counterEl);
+            }
+            
+            if (!query) {
+                // Restore all original HTML and show all sections
+                sections.forEach(sec => {
+                    const id = sec.getAttribute('id');
+                    if (sectionOriginalHTMLs[id]) {
+                        sec.innerHTML = sectionOriginalHTMLs[id];
+                    }
+                    sec.style.display = "block";
+                });
+                counterEl.innerText = "";
+                return;
+            }
+            
+            let totalMatches = 0;
+            // Escape special regex characters
+            const escapedQuery = query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+            // Regex to match query outside HTML tags to prevent tag breaking
+            const regex = new RegExp('(?![^<]*>)' + escapedQuery, 'gi');
+            
             sections.forEach(sec => {
-                const text = sec.innerText.toLowerCase();
-                if (text.includes(query)) {
+                const id = sec.getAttribute('id');
+                const originalHTML = sectionOriginalHTMLs[id];
+                
+                if (!originalHTML) return;
+                
+                // Temporary div to get clean text for search counting
+                const tempDiv = document.createElement("div");
+                tempDiv.innerHTML = originalHTML;
+                const textContent = tempDiv.innerText.toLowerCase();
+                
+                // Count occurrences in clean text
+                const occurrences = (textContent.match(new RegExp(escapedQuery, 'g')) || []).length;
+                
+                if (occurrences > 0) {
+                    totalMatches += occurrences;
+                    
+                    // Apply highlighting to matching text in HTML structure
+                    const highlightedHTML = originalHTML.replace(regex, match => {
+                        return `<mark class="cyber-highlight">${match}</mark>`;
+                    });
+                    
+                    sec.innerHTML = highlightedHTML;
                     sec.style.display = "block";
                 } else {
                     sec.style.display = "none";
                 }
             });
+            
+            if (totalMatches > 0) {
+                counterEl.innerText = `${totalMatches} مطابقات`;
+                counterEl.style.color = "var(--color-primary)";
+            } else {
+                counterEl.innerText = `لا توجد نتائج`;
+                counterEl.style.color = "var(--color-accent)";
+            }
         }
     </script>
 </body>
