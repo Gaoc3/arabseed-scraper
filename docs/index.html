@@ -709,19 +709,7 @@
                 </li>
             </ul>
 
-            <div class="sidebar-menu-title">الرفع والنشر</div>
-            <ul class="sidebar-nav-list">
-                <li class="sidebar-nav-item">
-                    <a href="#pypi-deploy" class="sidebar-nav-link" onclick="setActiveLink(this)">
-                        <i class="fa-solid fa-cloud-arrow-up"></i> النشر على PyPI
-                    </a>
-                </li>
-                <li class="sidebar-nav-item">
-                    <a href="#ghpages-deploy" class="sidebar-nav-link" onclick="setActiveLink(this)">
-                        <i class="fa-solid fa-globe"></i> استضافة GitHub Pages
-                    </a>
-                </li>
-            </ul>
+
         </aside>
 
         <!-- Main Content -->
@@ -964,48 +952,6 @@ for dl in download_links:
                 </div>
             </section>
 
-            <!-- SECTION 8: PyPI Publishing -->
-            <section id="pypi-deploy" class="doc-section">
-                <h1><i class="fa-solid fa-cloud-arrow-up"></i> تحديث الحزمة والرفع على PyPI</h1>
-                <p class="doc-paragraph">
-                    تم تكوين حزمة <code>arabseed-scraper</code> بمعايير البناء الحديثة باستخدام <code>pyproject.toml</code> و <code>setup.py</code>. لتحديث الحزمة أو رفعها، اتبع هذه الأوامر البسيطة:
-                </p>
-                
-                <div class="code-container">
-                    <div class="code-header">
-                        <div class="code-language">bash</div>
-                        <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> نسخ</button>
-                    </div>
-                    <pre><code># 1. تثبيت أدوات البناء الرسمية
-pip install --upgrade build twine
-
-# 2. بناء ملفات التوزيع المضغوطة
-python -m build
-
-# 3. التحقق من سلامة البيانات
-python -m twine check dist/*
-
-# 4. الرفع الفوري للمستودع
-python -m twine upload dist/*</code></pre>
-                </div>
-            </section>
-
-            <!-- SECTION 9: GitHub Pages Deployment -->
-            <section id="ghpages-deploy" class="doc-section">
-                <h1><i class="fa-solid fa-globe"></i> استضافة هذه الوثائق على GitHub Pages</h1>
-                <p class="doc-paragraph">
-                    يمكنك استضافة موقع الوثائق الرائع هذا مجاناً على **GitHub Pages** بكل بساطة بمجرد رفع المجلد إلى مستودعك الخاص. اتبع الخطوات التالية:
-                </p>
-                
-                <ol style="margin-right: 20px; margin-bottom: 20px;">
-                    <li>أنشئ مستودعاً (Repository) على حسابك في GitHub وسمه <code>arabseed-scraper</code>.</li>
-                    <li>قم برفع هذا الملف (<code>index.html</code>) داخل مجلد يسمى <code>docs/</code> في مستودعك.</li>
-                    <li>اذهب إلى إعدادات المستودع (Settings) ثم إلى تبويب **Pages**.</li>
-                    <li>من خيار **Build and deployment**، حدد المصدر ليكون **Deploy from a branch**.</li>
-                    <li>حدد الفرع (Branch) ليكون <code>main</code> والمجلد ليكون <code>/docs</code> ثم اضغط **Save**.</li>
-                    <li>خلال دقيقة واحدة، سيكون موقع التوثيق الملون والسايبر التفاعلي الخاص بك متاحاً للعالم بأكمله تحت نطاق <code>github.io</code>!</li>
-                </ol>
-            </section>
 
         </main>
     </div>
